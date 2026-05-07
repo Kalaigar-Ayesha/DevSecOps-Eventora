@@ -4,6 +4,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const promBundle = require('express-prom-bundle');
 
 // Load repo-root .env first, then server/.env (override: true so server/.env wins over root).
 dotenv.config({ path: path.join(__dirname, '..', '.env') });
@@ -37,6 +38,18 @@ const app = express();
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Prometheus Metrics Middleware
+const metricsMiddleware = promBundle({
+  includeMethod: true,
+  includePath: true,
+  includeStatusCode: true,
+  includeUp: true,
+  promClient: {
+    collectDefaultMetrics: {}
+  }
+});
+app.use(metricsMiddleware);
 
 // Liveness for orchestrators / Docker HEALTHCHECK (no DB dependency)
 app.get('/health', (_req, res) => {

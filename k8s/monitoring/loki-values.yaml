@@ -1,0 +1,15 @@
+loki:
+  isDefault: true
+  persistence:
+    enabled: false # Set to true if you have a default storage class for persistence
+
+promtail:
+  enabled: true
+  config:
+    lokiAddress: http://loki:3100/loki/api/v1/push
+    snippets:
+      pipelineStages:
+        - cri: {} # Parse CRI-formatted logs automatically
+
+grafana:
+  enabled: false # We use Grafana from the kube-prometheus-stack
