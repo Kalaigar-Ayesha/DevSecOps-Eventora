@@ -49,17 +49,19 @@ app.use('/api/events', eventRoutes);
 app.use('/api/bookings', bookingRoutes);
 
 // Database Connection (serverSelectionTimeoutMS surfaces failures faster in logs)
-mongoose
-  .connect(mongoUri, { serverSelectionTimeoutMS: 20000 })
-  .then(() => console.log('MongoDB Connected'))
-  .catch((err) => {
-    console.error('MongoDB Connection Error:', err);
-    if (String(err.message || err).includes('querySrv')) {
-      console.error(
-        'Atlas SRV DNS still failing. Options: (1) Atlas → Network Access → allow your IP. (2) Set DNS_SERVERS in server/.env (comma list). (3) Atlas → Connect → standard mongodb://… string (no +srv) if offered. (4) USE_SYSTEM_DNS=1 to skip this app’s DNS override.'
-      );
-    }
-  });
+if (process.env.NODE_ENV !== 'test') {
+  mongoose
+    .connect(mongoUri, { serverSelectionTimeoutMS: 20000 })
+    .then(() => console.log('MongoDB Connected'))
+    .catch((err) => {
+      console.error('MongoDB Connection Error:', err);
+      if (String(err.message || err).includes('querySrv')) {
+        console.error(
+          'Atlas SRV DNS still failing. Options: (1) Atlas → Network Access → allow your IP. (2) Set DNS_SERVERS in server/.env (comma list). (3) Atlas → Connect → standard mongodb://… string (no +srv) if offered. (4) USE_SYSTEM_DNS=1 to skip this app’s DNS override.'
+        );
+      }
+    });
+}
 
 const PORT = process.env.PORT || 5000;
 if (require.main === module) {
