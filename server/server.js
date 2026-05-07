@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const promBundle = require('express-prom-bundle');
+const helmet = require('helmet');
 
 // Load repo-root .env first, then server/.env (override: true so server/.env wins over root).
 dotenv.config({ path: path.join(__dirname, '..', '.env') });
@@ -36,6 +37,7 @@ const bookingRoutes = require('./routes/bookings');
 const app = express();
 
 // Middleware
+app.use(helmet());
 app.use(cors());
 app.use(express.json());
 

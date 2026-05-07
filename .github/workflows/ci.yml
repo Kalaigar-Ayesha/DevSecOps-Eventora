@@ -158,6 +158,10 @@ jobs:
     name: DAST (OWASP ZAP)
     needs: build-and-test
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+      contents: read
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
