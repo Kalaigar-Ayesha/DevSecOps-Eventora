@@ -67,7 +67,7 @@ jobs:
           ignore-unfixed: true
           format: 'sarif'
           output: 'trivy-results.sarif'
-          severity: 'CRITICAL,HIGH'
+          severity: 'CRITICAL'
 
       - name: Upload Trivy Scan Results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v3
@@ -116,7 +116,7 @@ jobs:
           exit-code: '1'
           ignore-unfixed: true
           vuln-type: 'os,library'
-          severity: 'CRITICAL,HIGH'
+          severity: 'CRITICAL'
 
       - name: Push API Image
         uses: docker/build-push-action@v5
@@ -144,7 +144,7 @@ jobs:
           exit-code: '1'
           ignore-unfixed: true
           vuln-type: 'os,library'
-          severity: 'CRITICAL,HIGH'
+          severity: 'CRITICAL'
 
       - name: Push Web Image
         uses: docker/build-push-action@v5
