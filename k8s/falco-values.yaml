@@ -1,0 +1,35 @@
+driver:
+  # Use modern eBPF to safely monitor syscalls without loading a kernel module
+  kind: ebpf
+
+falco:
+  json_output: true
+  json_include_output_property: true
+  json_include_tags_property: true
+
+  # Output to standard output so Loki can ingest the alerts
+  program_output:
+    enabled: false
+  http_output:
+    enabled: false
+  stdout_output:
+    enabled: true
+
+# The default Falco rulesets already include:
+# - Terminal shell in container
+# - Privilege escalation (Setuid or setgid bit)
+# - Run shell untrusted
+# We can add custom rules here if we want to elevate severity or create specific application alerts.
+customRules:
+  devsecops-rules.yaml: |-
+    - rule: Terminal shell in container
+      desc: A shell was used as the entrypoint/exec point of a container with an attached terminal.
+      condition: >
+        spawned_process and container
+        and shell_procs and proc.tty != 0
+        and container_entrypoint
+      output: >
+        A shell was spawned in a container with an attached terminal (user=%user.name user_loginuid=%user.loginuid %container.info
+        shell=%proc.name parent=%proc.pname cmdline=%proc.cmdline terminal=%proc.tty container_id=%container.id image=%container.image.repository)
+      priority: CRITICAL
+      tags: [container, shell, mitre_execution]

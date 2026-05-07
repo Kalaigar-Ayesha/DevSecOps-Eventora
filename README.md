@@ -44,3 +44,24 @@ Port-forward Grafana to your local machine:
 kubectl port-forward svc/prometheus-grafana 3000:80 -n monitoring
 ```
 Then visit `http://localhost:3000` (Default credentials: `admin` / `admin`). Your custom MERN dashboard should be pre-loaded under Dashboards.
+
+## Runtime Security (Falco)
+
+The cluster is secured with Falco for real-time behavioral threat detection, including alerts for container shell access, privilege escalation, and suspicious process execution.
+
+### Installation
+
+1. Add the Falco Helm repository:
+   ```bash
+   helm repo add falcosecurity https://falcosecurity.github.io/charts
+   helm repo update
+   ```
+
+2. Deploy Falco to the cluster using the custom DevSecOps ruleset:
+   ```bash
+   helm install falco falcosecurity/falco \
+     -n falco --create-namespace \
+     -f k8s/falco-values.yaml
+   ```
+
+3. **Viewing Alerts**: Falco is configured to output JSON alerts to standard output. Because we have deployed Loki and Promtail, Falco's alerts will automatically be scraped and can be searched within Grafana under the `{app="falco"}` log label.
