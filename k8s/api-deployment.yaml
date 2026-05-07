@@ -13,7 +13,10 @@ spec:
       labels:
         app: api
     spec:
+      serviceAccountName: api-sa
       securityContext:
+        seccompProfile:
+          type: RuntimeDefault
         fsGroup: 1001
         runAsUser: 1001
         runAsNonRoot: true
@@ -37,7 +40,7 @@ spec:
               cpu: "250m"
           securityContext:
             allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: false
+            readOnlyRootFilesystem: true
             capabilities:
               drop:
                 - ALL
@@ -53,3 +56,9 @@ spec:
               port: 5000
             initialDelaySeconds: 5
             periodSeconds: 10
+          volumeMounts:
+            - name: tmp-volume
+              mountPath: /tmp
+      volumes:
+        - name: tmp-volume
+          emptyDir: {}

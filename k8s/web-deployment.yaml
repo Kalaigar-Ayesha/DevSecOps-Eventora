@@ -13,7 +13,10 @@ spec:
       labels:
         app: web
     spec:
+      serviceAccountName: web-sa
       securityContext:
+        seccompProfile:
+          type: RuntimeDefault
         fsGroup: 101
         runAsUser: 101
         runAsNonRoot: true
@@ -32,7 +35,7 @@ spec:
               cpu: "100m"
           securityContext:
             allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: false
+            readOnlyRootFilesystem: true
             capabilities:
               drop:
                 - ALL
@@ -48,3 +51,17 @@ spec:
               port: 8080
             initialDelaySeconds: 5
             periodSeconds: 10
+          volumeMounts:
+            - name: tmp-volume
+              mountPath: /tmp
+            - name: nginx-cache
+              mountPath: /var/cache/nginx
+            - name: nginx-run
+              mountPath: /var/run
+      volumes:
+        - name: tmp-volume
+          emptyDir: {}
+        - name: nginx-cache
+          emptyDir: {}
+        - name: nginx-run
+          emptyDir: {}
